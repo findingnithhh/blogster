@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client'
+import React, { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { CgClose, CgMenuRight } from "react-icons/cg";
@@ -7,9 +7,9 @@ import { ModeToggle } from "./DarkMode";
 import { GoDotFill } from "react-icons/go";
 import { Badge } from "@/components/ui/badge";
 
-
 const Navbar = () => {
   const [isMenuShow, setIsMenuShow] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const menuItems = [
     { text: "Home", link: "/" },
     { text: "Explore", link: "https://www.youtube.com/" },
@@ -20,13 +20,24 @@ const Navbar = () => {
   ];
 
   const toggleMenu = () => {
-    closeMenu(); // Reset menu before opening
     setIsMenuShow(!isMenuShow);
   };
 
   const closeMenu = () => {
     setIsMenuShow(false);
   };
+
+  useEffect(() => {
+    function handleResize() {
+      setIsLargeScreen(window.innerWidth > 768);
+      if (window.innerWidth > 1024) {
+        closeMenu();
+      }
+    }
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call once to set initial value
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <>
@@ -75,7 +86,9 @@ const Navbar = () => {
             <Button className=" outline-none">Sign Up</Button>
           </div>
           <div
-            className="lg:hidden flex items-center cursor-pointer"
+            className={`lg:hidden flex items-center cursor-pointer ${
+              isMenuShow ? "bg-gray-200 p-1.5 rounded-full" : "p-1.5"
+            }`}
             onClick={toggleMenu}
           >
             {isMenuShow ? (
@@ -88,42 +101,40 @@ const Navbar = () => {
       </nav>
       {/* Small screen menu */}
       {isMenuShow && (
-        <div>
+        <>
           <div
-            className="fixed top-0 z-40 w-full h-full"
+            className="fixed top-0 left-0 z-50 w-full h-full bg-black opacity-50"
             onClick={toggleMenu}
           ></div>
           <div
-            className={`absolute top-0 z-50 w-[70%] h-screen block lg:hidden transition-transform transform duration-300 ease-in-out`}
-            style={{
-              transform: isMenuShow ? "translateX(0%)" : "translateX(-100%)",
-              transition: "transform 0.3s ease",
-            }}
+            className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ease-in-out ${
+              isMenuShow ? "h-screen" : "h-0"
+            }`}
           >
-            <div className="w-full flex items-center justify-center ">
-              <div className="block w-full overflow-hidden lg:hidden pt-4 pl-10 backdrop-blur-xl">
-                <h1 className="text-xl lg:text-2xl italic font-black flex items-end">
+            <div className="h-full bg-gray-900 text-white p-4 shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl lg:text-2xl italic font-black flex items-end">
                   Blogster
                   <span className="text-blue-700">
                     <GoDotFill />
                   </span>
                 </h1>
-                <ul className="text-sm mt-4">
-                  {menuItems.map((item, index) => (
-                    <li
-                      key={index}
-                      className="block lg:hidden hover:text-blue-500 py-3"
-                    >
-                      <Link href={item.link} onClick={closeMenu}>
-                        {item.text}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <button onClick={toggleMenu}>
+                  <CgClose className="h-6 w-6" />
+                </button>
               </div>
+              <ul className="text-2xl">
+                {menuItems.map((item, index) => (
+                  <li key={index} className="hover:text-blue-500 py-2">
+                    <Link href={item.link} onClick={closeMenu}>
+                      {item.text}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </div>
+        </>
       )}
     </>
   );

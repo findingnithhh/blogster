@@ -1,14 +1,16 @@
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { CardDirection } from "@/components/CardDirection";
-import Image from "next/image";
+import { InfiniteMovingCardsDemo } from "@/components/InfiniteMovingCards";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   return (
     <>
       <Navbar></Navbar>
-      <CardDirection />
-
+      <Hero />
+      {/* <CardDirection /> */}
+      {/* <InfiniteMovingCardsDemo /> */}
     </>
   );
 }
